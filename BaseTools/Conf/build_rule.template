@@ -128,7 +128,7 @@
         $(AT)"$(CXX)" $(CXX_FLAGS) -c -o ${dst} $(INC) ${src}
 
     <Command.XCODE>
-        @"echo" [CPP] ${s_base}
+        @"echo" [CPP] ${s_base} ":" "$(CC)" $(CXX_FLAGS) -o ${dst} $(INC) ${src}
         $(AT)"$(CC)" $(CXX_FLAGS) -o ${dst} $(INC) ${src}
 
 [C-Code-File]
@@ -154,7 +154,7 @@
         $(AT)"$(CC)" $(CC_FLAGS) -c -o ${dst} $(INC) ${src}
 
     <Command.XCODE>
-        @"echo" [CC] ${s_base}
+        @"echo" [CC] ${s_base} ":" "$(CC)" $(CC_FLAGS) -o ${dst} $(INC) ${src}
         $(AT)"$(CC)" $(CC_FLAGS) -o ${dst} $(INC) ${src}
 
 [C-Code-File.BASE.AARCH64,C-Code-File.SEC.AARCH64,C-Code-File.PEI_CORE.AARCH64,C-Code-File.PEIM.AARCH64,C-Code-File.BASE.ARM,C-Code-File.SEC.ARM,C-Code-File.PEI_CORE.ARM,C-Code-File.PEIM.ARM]
@@ -314,7 +314,7 @@
         $(AT)"$(SLINK)" $(SLINK_FLAGS) ${dst} $(OBJECT_FILES)
 
     <Command.XCODE>
-        @"echo" [SLINK] $(MODULE_NAME)
+        @"echo" [SLINK] $(MODULE_NAME) ":" "$(SLINK)" $(SLINK_FLAGS) ${dst} -filelist $(OBJECT_FILES_LIST)
         $(AT)"$(SLINK)" $(SLINK_FLAGS) ${dst} -filelist $(OBJECT_FILES_LIST)
 
 [Static-Library-File]
@@ -347,7 +347,7 @@
         $(AT)"$(DLINK)" $(DLINK_FLAGS) -o ${dst} $(DLINK_SPATH) $(STATIC_LIBRARY_FILES) $(DLINK2_FLAGS)
 
     <Command.XCODE>
-        @"echo" [DLINK] $(MODULE_NAME)
+        @"echo" [DLINK] $(MODULE_NAME) ":" "$(DLINK)" $(DLINK_FLAGS) -o ${dst} $(DLINK_SPATH) -filelist $(STATIC_LIBRARY_FILES_LIST)  $(DLINK2_FLAGS)
         $(AT)"$(DLINK)" $(DLINK_FLAGS) -o ${dst} $(DLINK_SPATH) -filelist $(STATIC_LIBRARY_FILES_LIST)  $(DLINK2_FLAGS)
     
     
@@ -395,7 +395,7 @@
         $(AT)"$(DLINK)" $(DLINK_FLAGS) -o ${dst} $(DLINK_SPATH) $(STATIC_LIBRARY_FILES) $(DLINK2_FLAGS)
 
     <Command.XCODE>
-        @"echo" [DLINK] $(MODULE_NAME)
+        @"echo" [DLINK] $(MODULE_NAME) ":" "$(DLINK)" -o ${dst} $(DLINK_FLAGS)  $(DLINK_SPATH) -filelist $(STATIC_LIBRARY_FILES_LIST)  $(DLINK2_FLAGS)
         $(AT)"$(DLINK)" -o ${dst} $(DLINK_FLAGS)  $(DLINK_SPATH) -filelist $(STATIC_LIBRARY_FILES_LIST)  $(DLINK2_FLAGS)
       
       
