@@ -10,6 +10,21 @@
 
 # $1 argument override MYTOOLCHAIN variable, in case you want GCC53 for example
 # ====== COLORS ======
+COL_BLACK=""
+COL_RED=""
+COL_GREEN=""
+COL_YELLOW=""
+COL_MAGENTA=""
+COL_CYAN=""
+COL_WHITE=""
+COL_BLUE=""
+COL_RESET=""
+COLUMNS=1
+MENU_SPACE=""
+
+if test -t 1; then
+  NCOLOURS=$(tput colors)
+  if test -n "${NCOLOURS}" && test "${NCOLOURS}" -ge 8; then
 COL_BLACK="\x1b[30;01m"
 COL_RED="\x1b[31;01m"
 COL_GREEN="\x1b[32;01m"
@@ -19,11 +34,19 @@ COL_CYAN="\x1b[36;01m"
 COL_WHITE="\x1b[37;01m"
 COL_BLUE="\x1b[34;01m"
 COL_RESET="\x1b[39;49;00m"
+    COLUMNS=""
+    MENU_SPACE="\n\n\n\n\n\n\n\n"
+
+  fi
+fi
 
 cd "$(dirname $([ -L $0 ] && readlink $0 || echo $0))"
 declare -r CLOVERROOT="$PWD"
 declare -r SYSNAME="$(uname)"
 MYTOOLCHAIN=${1:-GCC53}
+MYBUILDTARGET=${2:-RELEASE}
+echo "MYTOOLCHAIN: ${MYTOOLCHAIN}"
+echo "MYBUILDTARGET: ${MYBUILDTARGET}"
 revision=$(git describe --tags $(git rev-list --tags --max-count=1))
 lsha1="not a git repo"
 export DIR_OUT=${DIR_OUT:-"$CLOVERROOT"/toolchain/tools/output}
@@ -217,11 +240,13 @@ buildClover() {
   else
     local parameter=${1:-none}
     if [[ "${parameter}" == HFSPlus ]]; then
-      #./ebuild.sh -fr -mc --no-usb -D NO_GRUB_DRIVERS_EMBEDDED -D USE_APPLE_HFSPLUS_DRIVER -t $MYTOOLCHAIN
-      ./ebuild.sh -fr -D NO_GRUB_DRIVERS_EMBEDDED -D USE_APPLE_HFSPLUS_DRIVER -t $MYTOOLCHAIN
+      #    ./ebuild.sh -fr -mc --no-usb -D NO_GRUB_DRIVERS_EMBEDDED -D USE_APPLE_HFSPLUS_DRIVER -t $MYTOOLCHAIN -b $MYBUILDTARGET
+      echo ./ebuild.sh -fr              -D NO_GRUB_DRIVERS_EMBEDDED -D USE_APPLE_HFSPLUS_DRIVER -t $MYTOOLCHAIN -b $MYBUILDTARGET
+           ./ebuild.sh -fr              -D NO_GRUB_DRIVERS_EMBEDDED -D USE_APPLE_HFSPLUS_DRIVER -t $MYTOOLCHAIN -b $MYBUILDTARGET
     else
-      #./ebuild.sh -fr -mc --no-usb -D NO_GRUB_DRIVERS_EMBEDDED -t $MYTOOLCHAIN
-      ./ebuild.sh -fr -D NO_GRUB_DRIVERS_EMBEDDED -D LESS_DEBUG -t $MYTOOLCHAIN
+      #    ./ebuild.sh -fr -mc --no-usb -D NO_GRUB_DRIVERS_EMBEDDED               -t $MYTOOLCHAIN -b $MYBUILDTARGET
+      echo ./ebuild.sh -fr              -D NO_GRUB_DRIVERS_EMBEDDED -D LESS_DEBUG -t $MYTOOLCHAIN -b $MYBUILDTARGET
+           ./ebuild.sh -fr              -D NO_GRUB_DRIVERS_EMBEDDED -D LESS_DEBUG -t $MYTOOLCHAIN -b $MYBUILDTARGET
     fi
   fi
   # Run a post build script if exist (${DIR_TOOLS}/Scripts/postbuild.sh)
@@ -476,7 +501,7 @@ echo -e $COL_GREEN" ------------------------------------------------------------
 echo -e "                          🍀 Clover r${revision}$COL_WHITE (SHA: $lsha1)"
 echo -e $COL_CYAN"                                     Test Builds"
 echo -e $COL_GREEN" ------------------------------------------------------------------------------"$COL_RESET
-echo -e "\n\n\n\n\n\n\n\n\n\n\n"
+echo -e "${MENU_SPACE}\n\n\n"
 
 PS3='
 Please enter your choice: '
@@ -523,7 +548,7 @@ echo -e $COL_GREEN" ------------------------------------------------------------
 echo -e "                          🍀 Clover r${revision}$COL_WHITE (SHA: $lsha1)"
 echo -e $COL_CYAN"                                  External Utilities "
 echo -e $COL_GREEN" ------------------------------------------------------------------------------"$COL_RESET
-echo -e "\n\n\n\n\n\n\n\n"
+echo -e "${MENU_SPACE}"
 
 PS3='
 Files will be put on Desktop/ClovUtils: '
@@ -625,7 +650,7 @@ echo -e $COL_GREEN" ------------------------------------------------------------
 echo -e "                          🍀 Clover r${revision}$COL_WHITE (SHA: $lsha1)"
 echo -e "$COL_CYAN              TOOLCHAIN: $MYTOOLCHAIN (override example: './buildme XCODE8')"
 echo -e $COL_GREEN" ------------------------------------------------------------------------------"$COL_RESET
-echo -e "\n\n\n\n\n\n\n\n"
+echo -e "${MENU_SPACE}"
 PS3='
 Please enter your choice: '
 options=( 'build Clover'
