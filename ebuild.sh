@@ -938,21 +938,23 @@ MainBuildScript $@
 export BUILD_DIR="${WORKSPACE}/Build/Clover/${BUILDTARGET}_${TOOLCHAIN}"
 export BUILD_DIR_ARCH="${BUILD_DIR}/$TARGETARCH"
 
-rm -rf ${WORKSPACE}/Build/*.efi
-rm -rf ${WORKSPACE}/Build/*.zip
+if [[ $PLATFORMFILE == "Clover.dsc" ]]; then
+  rm -rf ${WORKSPACE}/Build/*.efi
+  rm -rf ${WORKSPACE}/Build/*.zip
 
-#extract build_id from efi instead of Version.h to be 100% sure that name correspond to actual content.
-dstFileName=CloverX64-"$BUILDTARGET"_"$TOOLCHAIN"-"$(grep -aEo "CloverBuildIdGrepTag: [^[:cntrl:]]*" < "$BUILD_DIR_ARCH"/CLOVERX64.efi | sed "s/CloverBuildIdGrepTag: //")"
+  #extract build_id from efi instead of Version.h to be 100% sure that name correspond to actual content.
+  dstFileName=CloverX64-"$BUILDTARGET"_"$TOOLCHAIN"-"$(grep -aEo "CloverBuildIdGrepTag: [^[:cntrl:]]*" < "$BUILD_DIR_ARCH"/CLOVERX64.efi | sed "s/CloverBuildIdGrepTag: //")"
+  
+  copyBin "$BUILD_DIR_ARCH"/CLOVERX64.efi ${WORKSPACE}/Build/"$dstFileName".efi
+  rm -f ${WORKSPACE}/Build/"$dstFileName".zip
+  zip ${WORKSPACE}/Build/"$dstFileName".zip ${WORKSPACE}/Build/"$dstFileName".efi
 
-copyBin "$BUILD_DIR_ARCH"/CLOVERX64.efi ${WORKSPACE}/Build/"$dstFileName".efi
-rm -f ${WORKSPACE}/Build/"$dstFileName".zip
-zip ${WORKSPACE}/Build/"$dstFileName".zip ${WORKSPACE}/Build/"$dstFileName".efi
-
-if [[ -z $MODULEFILE  ]] && (( $NOBOOTFILES == 0 )); then
-    MainPostBuildScript
-else
- copyBin "$BUILD_DIR_ARCH"/CLOVERX64.efi "$CLOVER_PKG_DIR"/EFI/CLOVER/CLOVERX64.efi
- copyBin "$BUILD_DIR_ARCH"/CLOVERX64.efi "$CLOVER_PKG_DIR"/EFI/BOOT/BOOTX64.efi
+  if [[ -z $MODULEFILE  ]] && (( $NOBOOTFILES == 0 )); then
+      MainPostBuildScript
+  else
+   copyBin "$BUILD_DIR_ARCH"/CLOVERX64.efi "$CLOVER_PKG_DIR"/EFI/CLOVER/CLOVERX64.efi
+   copyBin "$BUILD_DIR_ARCH"/CLOVERX64.efi "$CLOVER_PKG_DIR"/EFI/BOOT/BOOTX64.efi
+  fi
 fi
 
 # Local Variables:      #
